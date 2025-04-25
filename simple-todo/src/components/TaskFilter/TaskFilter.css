@@ -1,0 +1,83 @@
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .filter-btn {
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    color: var(--dark-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+  
+  .filter-btn:hover {
+    background-color: rgba(74, 111, 165, 0.1);
+  }
+  
+  .filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: inherit;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
+    margin-left: 0.4rem;
+  }
+  
+  .filter-btn.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .clear-completed-btn {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  
+  .clear-completed-btn:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 600px) {
+    .filter-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .filter-buttons {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .clear-completed-btn {
+      align-self: flex-end;
+    }
+  }
