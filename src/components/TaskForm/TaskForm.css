@@ -1,0 +1,71 @@
+.task-form-container {
+    margin-bottom: 2rem;
+  }
+  
+  .task-form {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .form-control {
+    flex: 1;
+    position: relative;
+  }
+  
+  .task-form input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .task-form input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+    outline: none;
+  }
+  
+  .input-error {
+    border-color: var(--danger-color) !important;
+  }
+  
+  .error-message {
+    position: absolute;
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+  
+  .add-btn {
+    background-color: var(--primary-color);
+    white-space: nowrap;
+  }
+  
+  .add-btn:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 600px) {
+    .task-form {
+      flex-direction: column;
+    }
+    
+    .add-btn {
+      align-self: flex-end;
+    }
+  }
