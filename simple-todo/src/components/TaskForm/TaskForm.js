@@ -1,20 +1,31 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { TaskContext } from '../../context/TaskContext';
+import { AuthContext } from '../../context/AuthContext';
 import './TaskForm.css';
 
 const TaskForm = () => {
   const [task, setTask] = useState('');
   const [error, setError] = useState('');
-  const { addTask } = useContext(TaskContext);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addTask, loading } = useContext(TaskContext);
+  const { currentUser } = useContext(AuthContext);
   const inputRef = useRef(null);
 
   useEffect(() => {
     // Focus input when component mounts
-    inputRef.current.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check if user is logged in
+    if (!currentUser) {
+      setError('You must be logged in to add tasks');
+      return;
+    }
     
     // Form validation
     if (task.trim() === '') {
@@ -32,15 +43,23 @@ const TaskForm = () => {
       return;
     }
     
-    // Add task
-    addTask(task);
-    
-    // Reset form
-    setTask('');
-    setError('');
-    
-    // Focus input for quick multiple entries
-    inputRef.current.focus();
+    try {
+      setIsSubmitting(true);
+      // Add task to Firebase
+      await addTask(task);
+      
+      // Reset form
+      setTask('');
+      setError('');
+      
+      // Focus input for quick multiple entries
+      inputRef.current.focus();
+    } catch (err) {
+      setError('Failed to add task. Please try again.');
+      console.error('Add task error:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -71,6 +90,7 @@ const TaskForm = () => {
             aria-invalid={error ? "true" : "false"}
             aria-describedby={error ? "task-error" : undefined}
             className={error ? "input-error" : ""}
+            disabled={!currentUser || isSubmitting || loading}
           />
           {error && (
             <div id="task-error" className="error-message" aria-live="polite">
@@ -78,8 +98,13 @@ const TaskForm = () => {
             </div>
           )}
         </div>
-        <button type="submit" className="btn add-btn" aria-label="Add task">
-          Add Task
+        <button 
+          type="submit" 
+          className={`btn add-btn ${isSubmitting ? 'btn-loading' : ''}`}
+          aria-label="Add task"
+          disabled={!currentUser || isSubmitting || loading}
+        >
+          {isSubmitting ? 'Adding...' : 'Add Task'}
         </button>
       </form>
     </div>

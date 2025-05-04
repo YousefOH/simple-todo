@@ -6,6 +6,9 @@ const TaskItem = ({ task }) => {
   const { toggleComplete, deleteTask, editTask } = useContext(TaskContext);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(task.title);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const editInputRef = useRef(null);
 
   useEffect(() => {
@@ -15,12 +18,25 @@ const TaskItem = ({ task }) => {
     }
   }, [isEditing]);
 
-  const handleToggleComplete = () => {
-    toggleComplete(task.id);
+  const handleToggleComplete = async () => {
+    try {
+      setIsToggling(true);
+      await toggleComplete(task.id);
+    } catch (error) {
+      console.error('Error toggling task:', error);
+    } finally {
+      setIsToggling(false);
+    }
   };
 
-  const handleDelete = () => {
-    deleteTask(task.id);
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteTask(task.id);
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      setIsDeleting(false);
+    }
   };
 
   const handleEditStart = () => {
@@ -32,12 +48,19 @@ const TaskItem = ({ task }) => {
     setEditedTitle(e.target.value);
   };
 
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
     
     if (editedTitle.trim() !== '') {
-      editTask(task.id, editedTitle);
-      setIsEditing(false);
+      try {
+        setIsUpdating(true);
+        await editTask(task.id, editedTitle);
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Error updating task:', error);
+      } finally {
+        setIsUpdating(false);
+      }
     }
   };
 
@@ -53,8 +76,11 @@ const TaskItem = ({ task }) => {
     }
   };
 
-  // Format creation date to be more readable
-  const formatDate = (dateString) => {
+  // Format creation date from timestamp to readable format
+  const formatDate = (timestamp) => {
+    if (!timestamp) return 'Unknown date';
+    
+    const date = new Date(timestamp);
     const options = { 
       year: 'numeric', 
       month: 'short', 
@@ -62,7 +88,7 @@ const TaskItem = ({ task }) => {
       hour: '2-digit',
       minute: '2-digit'
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return date.toLocaleDateString(undefined, options);
   };
 
   return (
@@ -77,16 +103,23 @@ const TaskItem = ({ task }) => {
             onKeyDown={handleKeyDown}
             className="edit-input"
             aria-label="Edit task"
+            disabled={isUpdating}
           />
           <div className="edit-actions">
-            <button type="submit" className="btn btn-sm" aria-label="Save changes">
-              Save
+            <button 
+              type="submit" 
+              className={`btn btn-sm ${isUpdating ? 'btn-loading' : ''}`} 
+              aria-label="Save changes"
+              disabled={isUpdating}
+            >
+              {isUpdating ? 'Saving...' : 'Save'}
             </button>
             <button 
               type="button" 
               className="btn btn-sm btn-danger" 
               onClick={handleEditCancel}
               aria-label="Cancel editing"
+              disabled={isUpdating}
             >
               Cancel
             </button>
@@ -100,14 +133,15 @@ const TaskItem = ({ task }) => {
                 type="checkbox"
                 checked={task.completed}
                 onChange={handleToggleComplete}
+                disabled={isToggling}
                 aria-label={`Mark "${task.title}" as ${task.completed ? 'incomplete' : 'complete'}`}
               />
-              <span className="checkmark"></span>
+              <span className={`checkmark ${isToggling ? 'checkmark-loading' : ''}`}></span>
             </label>
             
             <div className="task-details">
               <p className="task-title">{task.title}</p>
-              <time className="task-date" dateTime={task.createdAt}>
+              <time className="task-date" dateTime={new Date(task.createdAt).toISOString()}>
                 Created: {formatDate(task.createdAt)}
               </time>
             </div>
@@ -118,16 +152,17 @@ const TaskItem = ({ task }) => {
               className="action-btn edit-btn" 
               onClick={handleEditStart}
               aria-label="Edit task"
-              disabled={task.completed}
+              disabled={task.completed || isDeleting || isToggling}
             >
               Edit
             </button>
             <button 
-              className="action-btn delete-btn" 
+              className={`action-btn delete-btn ${isDeleting ? 'delete-btn-loading' : ''}`}
               onClick={handleDelete}
               aria-label="Delete task"
+              disabled={isDeleting || isToggling}
             >
-              Delete
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </>

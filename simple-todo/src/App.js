@@ -1,15 +1,15 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
-import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import { TaskProvider } from './context/TaskContext';
-import { AuthProvider } from './context/AuthContext';
+import Header from './components/Header/Header.js';
+import Footer from './components/Footer/Footer.js';
+import HomePage from './pages/HomePage.js';
+import AboutPage from './pages/AboutPage.js';
+import LoginPage from './pages/LoginPage.js';
+import RegisterPage from './pages/RegisterPage.js';
+import ProtectedRoute from './components/ProtectedRoute.js';
+import { TaskProvider } from './context/TaskContext.js';
+import { AuthProvider } from './context/AuthContext.js';
 
 function App() {
   return (
@@ -21,15 +21,15 @@ function App() {
             {/* Public Routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/about" element={<AboutPage />} />
             
-            {/* Protected Routes */}
+            {/* Protected Routes with TaskProvider */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={
                 <TaskProvider>
                   <HomePage />
                 </TaskProvider>
               } />
-              <Route path="/about" element={<AboutPage />} />
             </Route>
           </Routes>
         </main>
