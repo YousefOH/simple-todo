@@ -35,7 +35,7 @@ const TaskList = () => {
     );
   }
   
-  // If there are no tasks or the user is not authenticated
+  // If user is not authenticated
   if (!currentUser) {
     return (
       <div className="task-list-container empty" aria-live="polite">
@@ -46,17 +46,38 @@ const TaskList = () => {
     );
   }
   
-  // Show appropriate message when filter is applied but no tasks match
+  // Show appropriate message when no tasks exist or filter returns no results
   if (filteredTasks.length === 0) {
+    const emptyMessages = {
+      all: `
+        <div class="empty-tasks-container">
+          <div class="empty-tasks-icon">📋</div>
+          <h3>No Tasks Found</h3>
+          <p>You don't have any tasks yet. Add your first task to get started!</p>
+        </div>
+      `,
+      active: `
+        <div class="empty-tasks-container">
+          <div class="empty-tasks-icon">✅</div>
+          <h3>All Tasks Complete!</h3>
+          <p>You have no active tasks. Great job!</p>
+        </div>
+      `,
+      completed: `
+        <div class="empty-tasks-container">
+          <div class="empty-tasks-icon">🏆</div>
+          <h3>No Completed Tasks</h3>
+          <p>You haven't completed any tasks yet. Mark a task as complete to see it here.</p>
+        </div>
+      `
+    };
+    
     return (
       <div className="task-list-container empty" aria-live="polite">
-        <p className="empty-message">
-          {filter === 'all' 
-            ? `Welcome, ${currentUser.displayName || 'User'}! Your task list is empty. Add a new task to get started!`
-            : filter === 'active' 
-              ? "No active tasks. Great job!"
-              : "No completed tasks yet. Complete a task to see it here!"}
-        </p>
+        <div 
+          className="empty-message"
+          dangerouslySetInnerHTML={{ __html: emptyMessages[filter] }}
+        />
       </div>
     );
   }
